@@ -6,29 +6,13 @@
 "
 " See LICENSE for licensing concerns.
 
-
-" Use pyeval() or py3eval() for newer python versions or fall back to
-" vim.command() if vim version is old
-" This code is borrowed from Powerline
-let s:matcher_pycmd = has('python') ? 'py' : 'py3'
-let s:matcher_pyeval = s:matcher_pycmd.'eval'
-
-if exists('*'. s:matcher_pyeval)
-  let s:pyeval = function(s:matcher_pyeval)
-else
-  exec s:matcher_pycmd 'import json, vim'
-  exec "function! s:pyeval(e)\n".
-  \   s:matcher_pycmd." vim.command('return ' + json.dumps(eval(vim.eval('a:e'))))\n".
-  \"endfunction"
+if !has('python3')
+    echom 'ctrlp-cmatcher requires python3!'
+    finish
 endif
 
 let s:script_folder_path = escape( expand( '<sfile>:p:h' ), '\' )
-python << ImportEOF
-import sys, os, vim
-sys.path.insert( 0, os.path.abspath( vim.eval('s:script_folder_path' ) ) )
-import fuzzycomt
-sys.path.pop(0)
-ImportEOF
+unsilent execute 'py3file ' . s:script_folder_path . '/matcher.py'
 
 fu! s:matchtabs(item, pat)
   return match(split(a:item, '\t\+')[0], a:pat)
@@ -37,30 +21,6 @@ endf
 fu! s:matchfname(item, pat)
   let parts = split(a:item, '[\/]\ze[^\/]\+$')
   return match(parts[-1], a:pat)
-endf
-
-fu! s:cmatcher(lines, input, limit, mmode, ispath, crfile)
-python << EOF
-lines = vim.eval('a:lines')
-searchinp = vim.eval('a:input')
-limit = int(vim.eval('a:limit'))
-mmode = vim.eval('a:mmode')
-ispath = int(vim.eval('a:ispath'))
-crfile = vim.eval('a:crfile')
-
-if ispath and crfile:
-  try:
-    lines.remove(crfile)
-  except ValueError:
-    pass
-
-try:
-  # TODO we should support smartcase. Needs some fixing on matching side
-  matchlist = fuzzycomt.sorted_match_list(lines, searchinp.lower(), limit, mmode)
-except:
-  matchlist = []
-EOF
-return s:pyeval("matchlist")
 endf
 
 fu! s:escapechars(chars)
@@ -173,7 +133,7 @@ fu! matcher#cmatch(lines, input, limit, mmode, ispath, crfile, regex)
       return array
     en
 
-    let matchlist = s:cmatcher(a:lines, a:input, a:limit, a:mmode, a:ispath, a:crfile)
+    let matchlist = py3eval("ctrlp_cmatcher_match()")
   en
 
   cal s:highlight(a:input, a:mmode, a:regex)

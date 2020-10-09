@@ -1,4 +1,4 @@
 .DS_Store
 autoload/build
-autoload/fuzzycomt.so
+autoload/fuzzycomt*.so
 
