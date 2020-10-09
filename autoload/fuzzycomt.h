@@ -47,6 +47,6 @@ matchobj_t ctrlp_find_match(PyObject* str, PyObject* abbrev, char *mmode);
 
 void ctrlp_get_line_matches(PyObject* paths, PyObject* abbrev, matchobj_t matches[], char *mode);
 
-PyObject* ctrlp_fuzzycomt_match(PyObject* self, PyObject* args);
+static PyObject* ctrlp_fuzzycomt_match(PyObject* self, PyObject* args);
 
-PyObject* ctrlp_fuzzycomt_sorted_match_list(PyObject* self, PyObject* args);
+static PyObject* ctrlp_fuzzycomt_sorted_match_list(PyObject* self, PyObject* args);
