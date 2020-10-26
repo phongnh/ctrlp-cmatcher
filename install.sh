@@ -16,7 +16,7 @@ chkPython3()
 
 findPython3()
 {
-    cmd_list="python3.8 python3.7 python3.6 python3 python"
+    cmd_list="python3.9 python3.8 python3.7 python3.6 python3 python"
     for cmd in $cmd_list; do
         if chkPython3 $cmd; then
             found_python=$cmd
